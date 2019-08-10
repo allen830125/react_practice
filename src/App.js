@@ -3,6 +3,40 @@ import React, { Component } from 'react';
 import './App.css';
 import axios from 'axios';
 
+class Cart extends Component {
+
+  render() {
+    let selectedProduct = this.props.item || [];
+    let item = selectedProduct.map((data, idx) => {
+      return (
+        <li key={idx}>
+          <div className="cart-item">
+            <div className="cart-title">{data.name}</div>
+            <span className="price">$ {data.price}</span> x
+              <span className="count">{data.amount}</span>
+            <div className="handler">
+              <a href="#" className="cart-btn plus" onClick={() => this.props.onClick(data, "add")}>+</a>
+              <a href="#" className="cart-btn minus" onClick={() => this.props.onClick(data, "remove")}>-</a>
+            </div>
+          </div>
+        </li>
+      )
+    });
+    let total = 0;
+    selectedProduct.forEach(data => {
+      total += data.price * data.amount;
+    });
+
+    return (
+      <div className="well cart">
+        <h4>購物車</h4>
+        <ul className="itemsInCart">{item}</ul>
+        <p>小計： <span>{total}</span></p>
+      </div>
+    );
+  }
+}
+
 class Search extends Component {
   constructor(props) {
     super(props);
@@ -85,9 +119,18 @@ class App extends Component {
     }
   }
 
-  putCart(data) {
-    console.log(data)
-
+  putCart(item) {
+    let selectedProduct = JSON.parse(JSON.stringify(this.state.selectedProduct));
+    let dataIdx = selectedProduct.findIndex(data => data.id === item.id);
+    if (dataIdx > -1) {
+      selectedProduct[dataIdx].amount += 1;
+    }
+    else {
+      selectedProduct.push({ ...item, ...{ amount: 1 } });
+    }
+    this.setState({
+      selectedProduct: selectedProduct
+    });
   }
 
   searchProduct(value) {
@@ -95,7 +138,27 @@ class App extends Component {
       selectedPage: 1,
       search: value
     })
+  }
 
+  setCartProduct(item, type) {
+    let selectedProduct = JSON.parse(JSON.stringify(this.state.selectedProduct));
+    let dataIdx = selectedProduct.findIndex(data => data.id === item.id);
+    if (dataIdx > -1) {
+      if (type === "add") {
+        selectedProduct[dataIdx].amount += 1;
+      }
+      else {
+        if (selectedProduct[dataIdx].amount === 1) {
+          selectedProduct.splice(dataIdx, 1);
+        }
+        else {
+          selectedProduct[dataIdx].amount -= 1;
+        }
+      }
+      this.setState({
+        selectedProduct: selectedProduct
+      });
+    }
   }
 
   _setItem() {
@@ -160,24 +223,7 @@ class App extends Component {
             {/* search */}
             <Search onClick={(data) => this.searchProduct(data)}></Search>
             {/* cart */}
-            <div className="well cart">
-              <h4>購物車</h4>
-              <ul className="itemsInCart">
-                <li>
-                  <div className="cart-item">
-                    <div className="cart-title">name</div>
-                    <span className="price">$ price</span> x
-                    <span className="count">amount</span>
-                    <div className="handler">
-                      <a href="#" className="cart-btn plus" >+</a>
-                      <a href="#" className="cart-btn minus">-</a>
-                    </div>
-                  </div>
-                </li>
-              </ul>
-              <p>小計： <span>total</span></p>
-            </div>
-
+            <Cart item={this.state.selectedProduct} onClick={(data, type) => this.setCartProduct(data, type)}></Cart>
           </div>
         </div>
       </div>
