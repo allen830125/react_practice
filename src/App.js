@@ -120,6 +120,7 @@ class App extends Component {
           </div>
           {/* right */}
           <div className="col-md-4">
+          
             {/* search */}
             <Search onClick={(data) => this.searchProduct(data)}></Search>
             {/* cart */}
