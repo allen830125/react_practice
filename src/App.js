@@ -1,105 +1,21 @@
 import React, { Component } from 'react';
+import axios from 'axios';
 // import logo from './logo.svg';
 import './App.css';
-import axios from 'axios';
+import Cart from "./components/Cart";
+import Search from "./components/Search";
+import Pager from "./components/Pager";
+import Product from "./components/Product";
 
-class Cart extends Component {
-
-  render() {
-    let selectedProduct = this.props.item || [];
-    let item = selectedProduct.map((data, idx) => {
-      return (
-        <li key={idx}>
-          <div className="cart-item">
-            <div className="cart-title">{data.name}</div>
-            <span className="price">$ {data.price}</span> x
-              <span className="count">{data.amount}</span>
-            <div className="handler">
-              <a href="#" className="cart-btn plus" onClick={() => this.props.onClick(data, "add")}>+</a>
-              <a href="#" className="cart-btn minus" onClick={() => this.props.onClick(data, "remove")}>-</a>
-            </div>
-          </div>
-        </li>
-      )
-    });
-    let total = 0;
-    selectedProduct.forEach(data => {
-      total += data.price * data.amount;
-    });
-
-    return (
-      <div className="well cart">
-        <h4>購物車</h4>
-        <ul className="itemsInCart">{item}</ul>
-        <p>小計： <span>{total}</span></p>
-      </div>
-    );
-  }
-}
-
-class Search extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      value: ""
-    }
-  }
-
-  handleChange(e) {
-    this.setState({
-      value: e.target.value || ""
-    });
-  }
-
-  render() {
-    return (
-      <div className="well ">
-        <h4>商品搜尋</h4>
-        <div className="input-group ">
-          <input type="text" className="form-control" onChange={(e) => this.handleChange(e)}></input>
-          <span className="input-group-btn">
-            <button className="btn btn-default" onClick={() => this.props.onClick(this.state.value)}>
-              <span className="glyphicon glyphicon-search"></span>
-            </button>
-          </span>
-        </div>
-      </div>
-    );
-  }
-}
-
-class Product extends Component {
-  render() {
-    const item = this.props.item.slice();
-    const displayItem = item.map((data, idx) => {
-      return (
-        <div className="item" key={idx}>
-          <h2>{data.name}</h2>
-          <img className="item-img img-responsive" alt={data.imageType}></img>
-          <p>{data.info}</p>
-          <p className="item-price">$ {data.price}</p>
-          <a className="btn btn-primary " href="#" onClick={() => this.props.onClick(data)}>放入購物車
-            <span className="glyphicon glyphicon-chevron-right "></span>
-          </a>
-        </div>
-      );
-    });
-
-    return (
-      <div>{displayItem}</div>
-    );
-  }
-}
 class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
       product: [],
       items: [],
-      page: 1,
       selectedPage: 1,
       selectedProduct: [],
-      displayNum: 10,
+      displayNum: 6,
       search: ""
     }
   }
@@ -132,6 +48,12 @@ class App extends Component {
     });
   }
 
+  setSelectedPage(page) {
+    this.setState({
+      selectedPage: page
+    });
+  }
+
   searchProduct(value) {
     this.setState({
       selectedPage: 1,
@@ -160,7 +82,7 @@ class App extends Component {
     }
   }
 
-  _setItem() {
+  _setItemAndPage() {
     const fromNum = (this.state.selectedPage - 1) * this.state.displayNum;
     const endNum = fromNum + this.state.displayNum - 1;
     let product = JSON.parse(JSON.stringify(this.state.product));
@@ -172,11 +94,16 @@ class App extends Component {
     const item = product.filter((data, idx) => {
       return idx >= fromNum && idx <= endNum;
     });
-    return item;
+
+    let page = Math.ceil(product.length / this.state.displayNum);
+
+    return { item: item, page: page };
   }
 
   render() {
-    const item = this._setItem();
+    const data = this._setItemAndPage();
+    const item = data.item;
+    const page = data.page;
     return (
       <div className="container">
         <div className="row">
@@ -187,35 +114,9 @@ class App extends Component {
                 <small>5倍商城</small>
             </h1>
             {/* product */}
-            <Product item={item} onClick={(data) => this.putCart(data)}></Product>
+            <Product item={item} onClick={data => this.putCart(data)}></Product>
             {/* pager */}
-            <ul className="pagination">
-              <li>
-                <a href="#" aria-label="Previous">
-                  <span aria-hidden="true">&laquo;</span>
-                </a>
-              </li>
-              <li>
-                <a href="#">1</a>
-              </li>
-              <li>
-                <a href="#">2</a>
-              </li>
-              <li>
-                <a href="#">3</a>
-              </li>
-              <li>
-                <a href="#">4</a>
-              </li>
-              <li>
-                <a href="#">5</a>
-              </li>
-              <li>
-                <a href="#" aria-label="Next">
-                  <span aria-hidden="true">&raquo;</span>
-                </a>
-              </li>
-            </ul>
+            <Pager page={page} selectedPage={this.state.selectedPage} onClick={data => this.setSelectedPage(data)}></Pager>
           </div>
           {/* right */}
           <div className="col-md-4">
