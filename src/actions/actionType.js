@@ -1,3 +1,9 @@
 export const ADD_ITEM = 'ADD_ITEM';
 export const DEL_ITEM = 'DEL_ITEM';
 export const INIT_ITEMS = 'INIT_ITEMS';
+export const SEARCH_ITEM = 'SEARCH_ITEM';
+export const SHOPPING_CART_ADD = 'S_ADD_ITEM';
+export const SHOPPING_CART_DEL = 'S_DEL_ITEM';
+export const SHOPPING_CART_INIT = 'S_INIT_ITEM';
+export const SHOPPING_CART_SEARCH = 'S_SEARCH_ITEM';
+export const SHOPPING_CART_PAGE = 'S_SELECT_PAGE';

@@ -1,64 +1,49 @@
 import React, { Component } from 'react'
-import { connect } from 'react-redux'
-import * as actionCreators from './actions'
+import { Provider } from 'react-redux';
+import { Router, Route, browserHistory } from 'react-router'
+import store from './store';
+import ShoppingCart from './components/ShoppingCart';
+import TodoList from './components/TodoList';
+
+// const ShoppingCart = (location, cb) => {
+//     require.ensure(
+//         [],
+//         require => {
+//             cb(null, require('./components/ShoppingCart').default)
+//         },
+//         'shoppingCart'
+//     )
+// };
+
+// const TodoList = (location, cb) => {
+//     require.ensure(
+//         [],
+//         require => {
+//             cb(null, require('./components/TodoList').default)
+//         },
+//         'shoppingCart'
+//     )
+// }
 
 class App extends Component {
-    constructor(props) {
-        super(props);
-        this.state = { inputValue: '' }
-    }
-
-    handleChange(e) {
-        if (e.target instanceof HTMLInputElement) {
-            this.setState({
-                inputValue: e.target.value,
-            })
-        }
-    }
-
-    handleClick() {
-        this.props.onItemAdd(this.state.inputValue)
-
-        this.setState({
-            inputValue: '',
-        })
-    }
-
     render() {
-        const { items, onItemDel, onFetchData } = this.props
-        const display = items.map(item => {
+        const getRoute = (store) => {
             return (
-                <li key={item.id}>
-                    <input
-                        type="checkbox"
-                        id={item.id}
-                        onClick={() => onItemDel(item.id)}
-                    />
-                    {item.text}
-                </li>
-            )
-        })
+                <Route path="/">
+                    <Route path="shoppingCart" component={ShoppingCart}></Route>
+                    <Route path="todoList" component={TodoList}></Route>
+                </Route>
+            );
+        }
 
         return (
-            <div>
-                <div>
-                    <input type="text" value={this.state.inputValue}
-                        onChange={(e) => this.handleChange(e)}></input>
-                    <button onClick={() => this.handleClick()}>Add Item</button>
-                    <button onClick={() => onFetchData()}>Fetch Item</button>
-                </div>
-                <p>
-                    {display}
-                </p>
-            </div>
+            <Provider store={store}>
+                <Router history={browserHistory}>{getRoute(store)}</Router>
+            </Provider>
         )
-    }
+    };
 
 }
 
-const mapStateToProps = store => (
-    { items: store.items }
-)
-
-export default connect(mapStateToProps, actionCreators)(App);
+export default App;
 
