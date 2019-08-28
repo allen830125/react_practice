@@ -5,7 +5,7 @@ import * as actionCreators from '../actions/todoLista';
 class TodoList extends Component {
     constructor(props) {
         super(props);
-        this.state = { inputValue: '' }
+        this.state = { inputValue: '', test: '' }
     }
 
     handleChange(e) {
