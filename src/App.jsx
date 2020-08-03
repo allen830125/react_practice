@@ -19,6 +19,13 @@ const TodoList = (location, cb) => {
     });
 };
 
+const Calculator = (location, cb)=>{
+    import('./components/Calculator')
+    .then(module => {
+        cb(null, module.default)
+    });    
+}
+
 // const TodoList = (location, cb) => {
 //     require.ensure(
 //         [],
@@ -36,6 +43,7 @@ class App extends Component {
                 <Route path="/">
                     <Route path="shoppingCart" getComponent={ShoppingCart}></Route>
                     <Route path="todoList" getComponent={TodoList}></Route>
+                    <Route path="calculator" getComponent={Calculator}></Route>
                 </Route>
             );
         }

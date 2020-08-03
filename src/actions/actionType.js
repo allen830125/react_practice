@@ -7,3 +7,4 @@ export const SHOPPING_CART_DEL = 'S_DEL_ITEM';
 export const SHOPPING_CART_INIT = 'S_INIT_ITEM';
 export const SHOPPING_CART_SEARCH = 'S_SEARCH_ITEM';
 export const SHOPPING_CART_PAGE = 'S_SELECT_PAGE';
+export const CALCULATOR_SET_DATA = 'C_SET_DATA';
